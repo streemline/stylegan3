@@ -112,8 +112,7 @@ def collapsing_header(text, visible=None, flags=0, default=False, enabled=True, 
 def popup_button(label, width=0, enabled=True):
     if button(label, width, enabled):
         imgui.open_popup(label)
-    opened = imgui.begin_popup(label)
-    return opened
+    return imgui.begin_popup(label)
 
 #----------------------------------------------------------------------------
 

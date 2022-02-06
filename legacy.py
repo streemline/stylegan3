@@ -87,9 +87,8 @@ def _populate_module_params(module, *patterns):
     for name, tensor in misc.named_params_and_buffers(module):
         found = False
         value = None
-        for pattern, value_fn in zip(patterns[0::2], patterns[1::2]):
-            match = re.fullmatch(pattern, name)
-            if match:
+        for pattern, value_fn in zip(patterns[::2], patterns[1::2]):
+            if match := re.fullmatch(pattern, name):
                 found = True
                 if value_fn is not None:
                     value = value_fn(*match.groups())

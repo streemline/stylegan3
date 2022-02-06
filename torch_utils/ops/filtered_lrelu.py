@@ -154,7 +154,7 @@ def _filtered_lrelu_ref(x, fu=None, fd=None, b=None, up=1, down=1, padding=0, ga
 
 #----------------------------------------------------------------------------
 
-_filtered_lrelu_cuda_cache = dict()
+_filtered_lrelu_cuda_cache = {}
 
 def _filtered_lrelu_cuda(up=1, down=1, padding=0, gain=np.sqrt(2), slope=0.2, clamp=None, flip_filter=False):
     """Fast CUDA implementation of `filtered_lrelu()` using custom ops.
@@ -241,14 +241,16 @@ def _filtered_lrelu_cuda(up=1, down=1, padding=0, gain=np.sqrt(2), slope=0.2, cl
             _, _, xh, xw = ctx.x_shape
             _, _, yh, yw = ctx.y_shape
             sx, sy = ctx.s_ofs
-            dx  = None # 0
-            dfu = None; assert not ctx.needs_input_grad[1]
-            dfd = None; assert not ctx.needs_input_grad[2]
-            db  = None # 3
-            dsi = None; assert not ctx.needs_input_grad[4]
-            dsx = None; assert not ctx.needs_input_grad[5]
-            dsy = None; assert not ctx.needs_input_grad[6]
+            assert not ctx.needs_input_grad[1]
+            assert not ctx.needs_input_grad[2]
+            dsi = None
+            assert not ctx.needs_input_grad[4]
+            dsx = None
+            assert not ctx.needs_input_grad[5]
+            dsy = None
+            assert not ctx.needs_input_grad[6]
 
+            dx = None
             if ctx.needs_input_grad[0] or ctx.needs_input_grad[3]:
                 pp = [
                     (fu.shape[-1] - 1) + (fd.shape[-1] - 1) - px0,
@@ -262,9 +264,9 @@ def _filtered_lrelu_cuda(up=1, down=1, padding=0, gain=np.sqrt(2), slope=0.2, cl
                 sy = sy - (fu.shape[0]  - 1) + py0
                 dx = _filtered_lrelu_cuda(up=down, down=up, padding=pp, gain=gg, slope=slope, clamp=None, flip_filter=ff).apply(dy, fd, fu, None, si, sx, sy)
 
-            if ctx.needs_input_grad[3]:
-                db = dx.sum([0, 2, 3])
-
+            db = dx.sum([0, 2, 3]) if ctx.needs_input_grad[3] else None
+            dfu = None
+            dfd = None
             return dx, dfu, dfd, db, dsi, dsx, dsy
 
     # Add to cache.

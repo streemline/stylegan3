@@ -17,7 +17,7 @@ import dnnlib
 # Cached construction of constant tensors. Avoids CPU=>GPU copy when the
 # same constant is used multiple times.
 
-_constant_cache = dict()
+_constant_cache = {}
 
 def constant(value, shape=None, dtype=None, device=None, memory_format=None):
     value = np.asarray(value)
@@ -180,7 +180,7 @@ def ddp_sync(module, sync):
 def check_ddp_consistency(module, ignore_regex=None):
     assert isinstance(module, torch.nn.Module)
     for name, tensor in named_params_and_buffers(module):
-        fullname = type(module).__name__ + '.' + name
+        fullname = f'{type(module).__name__}.{name}'
         if ignore_regex is not None and re.fullmatch(ignore_regex, fullname):
             continue
         tensor = tensor.detach()
