@@ -31,8 +31,7 @@ def parse_range(s: Union[str, List]) -> List[int]:
     ranges = []
     range_re = re.compile(r'^(\d+)-(\d+)$')
     for p in s.split(','):
-        m = range_re.match(p)
-        if m:
+        if m := range_re.match(p):
             ranges.extend(range(int(m.group(1)), int(m.group(2))+1))
         else:
             ranges.append(int(p))
@@ -115,9 +114,8 @@ def generate_images(
         if class_idx is None:
             raise click.ClickException('Must specify class label with --class when using a conditional network')
         label[:, class_idx] = 1
-    else:
-        if class_idx is not None:
-            print ('warn: --class=lbl ignored when running on an unconditional network')
+    elif class_idx is not None:
+        print ('warn: --class=lbl ignored when running on an unconditional network')
 
     # Generate images.
     for seed_idx, seed in enumerate(seeds):

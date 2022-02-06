@@ -29,7 +29,7 @@ from tqdm import tqdm
 #----------------------------------------------------------------------------
 
 def error(msg):
-    print('Error: ' + msg)
+    print(f'Error: {msg}')
     sys.exit(1)
 
 #----------------------------------------------------------------------------
@@ -41,17 +41,14 @@ def parse_tuple(s: str) -> Tuple[int, int]:
         '4x2' returns (4,2)
         '0,1' returns (0,1)
     '''
-    m = re.match(r'^(\d+)[x,](\d+)$', s)
-    if m:
+    if m := re.match(r'^(\d+)[x,](\d+)$', s):
         return (int(m.group(1)), int(m.group(2)))
     raise ValueError(f'cannot parse tuple {s}')
 
 #----------------------------------------------------------------------------
 
 def maybe_min(a: int, b: Optional[int]) -> int:
-    if b is not None:
-        return min(a, b)
-    return a
+    return min(a, b) if b is not None else a
 
 #----------------------------------------------------------------------------
 
@@ -392,7 +389,7 @@ def convert_dataset(
 
     PIL.Image.init() # type: ignore
 
-    if dest == '':
+    if not dest:
         ctx.fail('--dest output filename or directory must not be an empty string')
 
     num_files, input_iter = open_dataset(source, max_images=max_images)

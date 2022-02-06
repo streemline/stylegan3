@@ -31,7 +31,7 @@ class PickleWidget:
         self.cur_pkl        = None
         self.user_pkl       = ''
         self.recent_pkls    = []
-        self.browse_cache   = dict() # {tuple(path, ...): [dnnlib.EasyDict(), ...], ...}
+        self.browse_cache = {}
         self.browse_refocus = False
         self.load('', ignore_errors=True)
 

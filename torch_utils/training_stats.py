@@ -11,6 +11,7 @@ multiple processes and devices. The interface is designed to minimize
 synchronization overhead as well as the amount of boilerplate in user
 code."""
 
+
 import re
 import numpy as np
 import torch
@@ -27,7 +28,7 @@ _rank           = 0             # Rank of the current process.
 _sync_device    = None          # Device to use for multiprocess communication. None = single-process.
 _sync_called    = False         # Has _sync() been called yet?
 _counters       = dict()        # Running counters on each device, updated by report(): name => device => torch.Tensor
-_cumulative     = dict()        # Cumulative counters on the CPU, updated by _sync(): name => torch.Tensor
+_cumulative = {}
 
 #----------------------------------------------------------------------------
 
@@ -77,7 +78,7 @@ def report(name, value):
         The same `value` that was passed in.
     """
     if name not in _counters:
-        _counters[name] = dict()
+        _counters[name] = {}
 
     elems = torch.as_tensor(value)
     if elems.numel() == 0:
@@ -134,7 +135,7 @@ class Collector:
         self._regex = re.compile(regex)
         self._keep_previous = keep_previous
         self._cumulative = dict()
-        self._moments = dict()
+        self._moments = {}
         self.update()
         self._moments.clear()
 

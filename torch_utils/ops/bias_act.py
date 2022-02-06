@@ -121,7 +121,7 @@ def _bias_act_ref(x, b=None, dim=1, act='linear', alpha=None, gain=None, clamp=N
 
 #----------------------------------------------------------------------------
 
-_bias_act_cuda_cache = dict()
+_bias_act_cuda_cache = {}
 
 def _bias_act_cuda(dim=1, act='linear', alpha=None, gain=None, clamp=None):
     """Fast CUDA implementation of `bias_act()` using custom ops.
@@ -162,10 +162,10 @@ def _bias_act_cuda(dim=1, act='linear', alpha=None, gain=None, clamp=None):
             db = None
 
             if ctx.needs_input_grad[0] or ctx.needs_input_grad[1]:
-                dx = dy
                 if act != 'linear' or gain != 1 or clamp >= 0:
                     dx = BiasActCudaGrad.apply(dy, x, b, y)
-
+                else:
+                    dx = dy
             if ctx.needs_input_grad[1]:
                 db = dx.sum([i for i in range(dx.ndim) if i != dim])
 
